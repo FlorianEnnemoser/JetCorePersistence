@@ -2,6 +2,8 @@ import numpy as np
 import xarray as xr
 import scipy as sp
 
+SEASON_MAPPING = {1: "DJF", 2: "DJF", 3: "MAM", 4: "MAM", 5: "MAM", 6: "JJA", 7: "JJA", 8: "JJA", 9: "SON", 10: "SON", 11: "SON", 12: "DJF"}
+
 def find_latitudinal_max(data : xr.DataArray) -> xr.DataArray:
     lat_maxima = data.max(dim='latitude')    
     return data.where(data == lat_maxima)
@@ -41,6 +43,11 @@ def lin_regress_xr(x : xr.DataArray, y : xr.DataArray, dim : str) -> xr.Dataset:
                         output_dtypes=['float64'],
                         output_sizes={"parameter": 5},
                         ).assign_coords({"parameter":["k","d","r","p","err"]}).to_dataset(dim="parameter")
+
+def seasonal_mapping(first_day,last_day) -> str:
+    event_range = xr.date_range(start=str(first_day.values),end=str(last_day.values),freq="D")
+    unique_months, unique_counts = np.unique(event_range.month, return_counts=True)
+    return SEASON_MAPPING.get(unique_months[np.argmax(unique_counts)])
 
 def persistence(data: xr.DataArray, lat_limit: float = 2.5, consecutive_days: int = 3) -> xr.DataArray:
     data = data.squeeze()
