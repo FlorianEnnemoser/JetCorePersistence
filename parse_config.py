@@ -12,5 +12,4 @@ def execute(filepath : str):
     region = Region(name=config["REGION"]["name"],
                     lat=config["REGION"]["latitude"],
                     lon=config["REGION"]["longitude"])
-    calc_funcs 
     
